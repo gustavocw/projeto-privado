@@ -36,6 +36,11 @@ export default class MenuProvider implements IMenuProvider {
             nameToken: NameToken.VEICULOS_REBOQUES,
             palavrasChave: ['veiculos', 'reboques'],
           },
+          {
+            nome: 'Empresas e pessoas',
+            nameToken: NameToken.EMPRESAS_E_PESSOAS,
+            palavrasChave: ['empresas', 'pessoas'],
+          },
         ],
       },
     ];

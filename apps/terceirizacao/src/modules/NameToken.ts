@@ -15,6 +15,11 @@ export default class NameToken implements INameToken {
     component: lazy(() => import('../client/configuracoes/tiposAtendimento/cadastro/CadastroTiposAtendimentoView')),
   });
 
+ static readonly EMPRESAS_E_PESSOAS = new NameToken({
+   endpoint: '/empresas-e-pessoas',
+   component: lazy(() => import('../client/CadastroDocumentos/EmpresasPessoas/EmpresasPessoasView')),
+ });
+
  static readonly VEICULOS_REBOQUES = new NameToken({
    endpoint: '/veiculos-e-reboques',
    component: lazy(() => import('../client/CadastroDocumentos/VeiculosReboquesView')),
