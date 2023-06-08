@@ -57,12 +57,12 @@ export default class EmpresasPessoasBloc extends BaseBloc {
 
   @action.bound
   cadastrarRegistro(): void {
-    this.viewHandler.navegarParaPagina(NameToken.CADASTRO_VEICULO, false, {});
+    this.viewHandler.navegarParaPagina(NameToken.CADASTRO_EMPRESAS_E_PESSOAS, false, {});
   }
 
   @action.bound
   editarRegistro(registro: Veiculo): void {
-    this.viewHandler.navegarParaPagina(NameToken.CADASTRO_VEICULO, false, {codigo: registro.CODIGO});
+    this.viewHandler.navegarParaPagina(NameToken.CADASTRO_EMPRESAS_E_PESSOAS, false, {codigo: registro.CODIGO});
   }
 
   @action.bound

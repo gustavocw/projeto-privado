@@ -38,8 +38,14 @@ export default class MenuProvider implements IMenuProvider {
           },
           {
             nome: 'Empresas e pessoas',
-            nameToken: NameToken.EMPRESAS_E_PESSOAS,
-            palavrasChave: ['empresas', 'pessoas'],
+
+            itens: [
+              {
+                nome: 'cadastro',
+                nameToken: NameToken.EMPRESAS_E_PESSOAS,
+                palavrasChave: ['empresas', 'pessoas'],
+              },
+            ],
           },
         ],
       },

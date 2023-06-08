@@ -74,7 +74,7 @@ const EmpresasPessoasView: React.FC<ComponentProps> = ({bloc}: ComponentProps) =
               variant="contained"
               onClick={bloc.cadastrarRegistro}
             >
-              NOVO VEICULO
+              ADICIONAR
             </Button>
           </BarraAcoes>
         )}
