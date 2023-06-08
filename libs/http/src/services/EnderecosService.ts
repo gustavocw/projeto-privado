@@ -10,11 +10,8 @@ export default class EnderecosService extends BaseService {
     return this.http.get('alkord-geral-paises', Pais, {ordenacoes: 'NOME'});
   }
 
-  getEstados(codigoPais?: number): Promise<RetornoRegistros<Estado>> {
-    return this.http.get('alkord-geral-estados', Estado, {
-      filtros: `PAIS:IGUAL:${codigoPais ?? 1}`,
-      ordenacoes: 'NOME',
-    });
+  getEstados(selectParametros: SelectParametros): Promise<RetornoRegistros<Estado>> {
+    return this.http.get('alkord-geral-estados', Estado, SelectParametros.toRest(selectParametros));
   }
 
   getCidades(selectParametros: SelectParametros): Promise<RetornoRegistros<Cidade>> {

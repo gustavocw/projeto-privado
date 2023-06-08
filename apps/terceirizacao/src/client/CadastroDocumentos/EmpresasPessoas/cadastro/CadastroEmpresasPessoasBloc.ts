@@ -1,5 +1,5 @@
+import React from 'react';
 import {action, computed, IReactionDisposer, observable, reaction} from 'mobx';
-
 import BaseBloc from '@alkord/shared/bloc/BaseBloc';
 import TipoPermissao from '@alkord/shared/modules/TipoPermissao.enum';
 import GlobalHandlers from '@alkord/models/handlers/GlobalHandlers';
@@ -21,6 +21,7 @@ export default class CadastroEmpresasPessoasBloc extends BaseBloc {
   @observable erros: { [key: string]: string } = {};
   @observable visibilidadeCampos: { [key in Paths<Veiculo>]?: boolean } = {};
   @observable paises: Pais[] = [];
+  @observable paisEscolhido: Pais;
 
   @observable private itensCarregando: number = 0;
   private reactions: IReactionDisposer[] = null;
@@ -37,8 +38,6 @@ export default class CadastroEmpresasPessoasBloc extends BaseBloc {
 
       const {REGISTROS} = await Services.get().enderecosService.getPaises();
 
-      console.log(REGISTROS);
-
       this.paises = REGISTROS;
     }
     catch (e) {
@@ -50,11 +49,19 @@ export default class CadastroEmpresasPessoasBloc extends BaseBloc {
   }
 
   @action.bound
-  async buscaEstados(): Promise<void> {
+  buscarEstadoPorPais(event: React.ChangeEvent<any>) {
+    this.buscarEstados(event.target.value ?? 1);
+  }
+
+  @action.bound
+  async buscarEstados(codigoPais?: number): Promise<void> {
     try {
       this.itensCarregando++;
 
-      const response = await Services.get().enderecosService.getEstados();
+      const response = await Services.get().enderecosService.getEstados({
+        filtros: `PAIS:IGUAL:${codigoPais ?? 1}`,
+        ordenacao: 'NOME',
+      });
       this.estados = response.REGISTROS;
     }
     catch (e) {

@@ -33,7 +33,7 @@ export default class CadastroVeiculosBloc extends BaseBloc {
     try {
       this.itensCarregando++;
 
-      const response = await Services.get().enderecosService.getEstados();
+      const response = await Services.get().enderecosService.getEstados({});
       this.estados = response.REGISTROS;
     }
     catch (e) {
