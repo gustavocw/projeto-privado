@@ -60,6 +60,7 @@ import SistemaConfiguracoesPessoasService from './services/SistemaConfiguracoesP
 import ProdutosEstoquesService from './services/ProdutosEstoquesService';
 import SistemaNotificacoesService from './services/SistemaNotificacoesService';
 import TiposOperacoesService from './services/TiposOperacoesService';
+import ResponsaveisVendasService from './services/ResponsaveisVendasService';
 
 export default class Services {
   private static instance: Services;
@@ -85,6 +86,7 @@ export default class Services {
   readonly notificacoesAgendamentoService = new NotificacoesAgendamentoService(this.authHttpClient);
   readonly perfilPlanilhaDeDadosService = new PerfilPlanilhaDeDadosService(this.authHttpClient);
   readonly vendasPorCidadeService = new VendasPorCidadeService(this.authHttpClient);
+  readonly responsaveisVendasService = new ResponsaveisVendasService(this.authHttpClient);
   readonly gradesService = new GradesService(this.authHttpClient);
   readonly areaAtuacaoService = new AreaAtuacaoService(this.authHttpClient);
   readonly canaisVendaService = new CanaisVendaService(this.authHttpClient);

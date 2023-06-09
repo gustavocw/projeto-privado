@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import {action, computed, IReactionDisposer, observable, reaction} from 'mobx';
 import BaseBloc from '@alkord/shared/bloc/BaseBloc';
 import TipoPermissao from '@alkord/shared/modules/TipoPermissao.enum';
@@ -48,29 +48,29 @@ export default class CadastroEmpresasPessoasBloc extends BaseBloc {
     }
   }
 
-  @action.bound
-  buscarEstadoPorPais(event: React.ChangeEvent<any>) {
-    this.buscarEstados(event.target.value ?? 1);
-  }
+  // @action.bound
+  // buscarEstadoPorPais(event: React.ChangeEvent<any>) {
+  //   this.buscarEstados(event.target.value);
+  // }
 
-  @action.bound
-  async buscarEstados(codigoPais?: number): Promise<void> {
-    try {
-      this.itensCarregando++;
+  // @action.bound
+  // async buscarEstados(codigoPais?: number): Promise<void> {
+  //   try {
+  //     this.itensCarregando++;
 
-      const response = await Services.get().enderecosService.getEstados({
-        filtros: `PAIS:IGUAL:${codigoPais ?? 1}`,
-        ordenacao: 'NOME',
-      });
-      this.estados = response.REGISTROS;
-    }
-    catch (e) {
-      this.viewHandler.exibirMensagem(null, e.message);
-    }
-    finally {
-      this.itensCarregando--;
-    }
-  }
+  //     const response = await Services.get().enderecosService.getEstados({
+  //       filtros: `PAIS:IGUAL:${codigoPais ?? 1}`,
+  //       ordenacao: 'NOME',
+  //     });
+  //     this.estados = response.REGISTROS;
+  //   }
+  //   catch (e) {
+  //     this.viewHandler.exibirMensagem(null, e.message);
+  //   }
+  //   finally {
+  //     this.itensCarregando--;
+  //   }
+  // }
 
   @action.bound
   async buscarCidades(estado: Estado): Promise<void> {

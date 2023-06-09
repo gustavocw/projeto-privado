@@ -27,7 +27,7 @@ const CadastroEmpresasPessoasView: React.FC<Props> = (props: Props) => {
 
   useEffect(() => {
     bloc.buscarPaises();
-    bloc.buscarEstados();
+    // bloc.buscarEstados();
   }, [bloc]);
 
   return (
@@ -63,22 +63,10 @@ const CadastroEmpresasPessoasView: React.FC<Props> = (props: Props) => {
                   <Select<Pais>
                     required
                     label="País de origem"
-                    onClick={(e: ChangeEvent) => bloc.buscarEstadoPorPais(e)}
+                    onClick={(e: ChangeEvent<any>) => bloc.buscarEstadoPorPais(e)}
                     registros={bloc.paises}
                     keyHandler={(registro) => registro.CODIGO + ''}
                     descriptionHandler={(registro) => registro.NOME}
-                  />
-                </CampoFormulario>
-              </Grid>
-
-              <Grid item md={3} sm={3} xs={3}>
-                <CampoFormulario propriedade="CODIGO" adapter={ValueAdapter}>
-                  <Select
-                    required
-                    label="Estado"
-                    registros={bloc.estados}
-                    keyHandler={(estados) => estados.NOME.toString()}
-                    descriptionHandler={(estados) => estados.NOME}
                   />
                 </CampoFormulario>
               </Grid>

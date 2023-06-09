@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ViewProps from '@alkord/shared/types/ViewProps';
 import {bindView} from '@alkord/components/ViewBinder';
 import useBaseViewHandler from '@alkord/shared/bloc/UseBaseViewHandler';
@@ -11,16 +11,19 @@ import SearchBar from '@alkord/components/SearchBar';
 import {DeleteOutline} from '@material-ui/icons';
 import {Button} from '@material-ui/core';
 import BarraAcoes from '@alkord/components/BarraAcoes';
-import Veiculo from '@alkord/models/Veiculo';
-import VeiculosTipo from '@alkord/models/enum/VeiculosTipo';
 import EmpresasPessoasBloc from './EmpresasPessoasBloc';
 import FiltroEmpresasPessoasView from './filtro/FiltroEmpresasPessoas.View';
 import FiltroEmpresasPessoas from './filtro/FiltroEmpresasPessoas';
+import ResponsaveisVendas from '@alkord/models/ResponsaveisVendas';
 
 type ComponentProps = ViewProps<EmpresasPessoasBloc>;
 
 const EmpresasPessoasView: React.FC<ComponentProps> = ({bloc}: ComponentProps) => {
   useBaseViewHandler(bloc);
+
+  useEffect(() => {
+    bloc.buscarTodosRegistros();
+  }, [bloc]);
 
   return (
     <>
@@ -36,23 +39,19 @@ const EmpresasPessoasView: React.FC<ComponentProps> = ({bloc}: ComponentProps) =
           onCarregarMaisRegistros={bloc.buscarMaisRegistros}
           displayDivider
         >
-          <ListaRegistros<Veiculo>
-            registros={bloc.veiculos}
-            onClick={bloc.isEdicaoHabilitada && bloc.editarRegistro}
+          <ListaRegistros<ResponsaveisVendas>
+            registros={bloc.responsaveisVendas}
+            onClick={() => alert('clicou na lista de registros')}
 
             render={(registro) => {
-              const tipo = VeiculosTipo.getUsandoCodigo(registro.TIPO);
-              const nomeVeiculo = VeiculosTipo.getDescricao(tipo);
-
               return (
                 <div>
                   <Text style={{fontWeight: '450'}}>
-                    {nomeVeiculo} - {registro.TIPO}
-                    {`(Placa: ${registro.PLACA}) `}
+                    informações serão aqui
                   </Text>
 
                   <Text style={{fontWeight: '400', color: '#6E6E6E'}}>
-                    {registro.ESTADO.NOME}
+                    outras infomrações serão aqui
                   </Text>
                 </div>
               );
@@ -60,13 +59,13 @@ const EmpresasPessoasView: React.FC<ComponentProps> = ({bloc}: ComponentProps) =
 
             acoes={{
               onClick: bloc.removerRegistro,
-              condicao: () => bloc.isRemocaoHabilitada,
+              condicao: () => true,
               icone: <DeleteOutline color="secondary"/>,
             }}
           />
         </CardRegistros>
 
-        {bloc.isCadastroHabilitado && (
+        {/* {bloc.isCadastroHabilitado && (
           <BarraAcoes sempreVisivel>
             <Button
               type="submit"
@@ -77,7 +76,7 @@ const EmpresasPessoasView: React.FC<ComponentProps> = ({bloc}: ComponentProps) =
               ADICIONAR
             </Button>
           </BarraAcoes>
-        )}
+        )} */}
       </ViewContent>
     </>
   );
