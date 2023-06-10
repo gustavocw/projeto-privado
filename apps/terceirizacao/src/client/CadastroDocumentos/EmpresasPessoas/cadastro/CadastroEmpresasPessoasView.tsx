@@ -27,7 +27,6 @@ const CadastroEmpresasPessoasView: React.FC<Props> = (props: Props) => {
 
   useEffect(() => {
     bloc.buscarPaises();
-    // bloc.buscarEstados();
   }, [bloc]);
 
   return (
@@ -63,7 +62,7 @@ const CadastroEmpresasPessoasView: React.FC<Props> = (props: Props) => {
                   <Select<Pais>
                     required
                     label="País de origem"
-                    onClick={(e: ChangeEvent<any>) => bloc.buscarEstadoPorPais(e)}
+                    onClick={() => alert('')}
                     registros={bloc.paises}
                     keyHandler={(registro) => registro.CODIGO + ''}
                     descriptionHandler={(registro) => registro.NOME}

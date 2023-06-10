@@ -12,7 +12,7 @@ export default class FiltroVeiculosReboquesBloc {
 
   @action.bound
   async buscarEstados() {
-    this.listaEstados = (await this.enderecosService.getEstados()).REGISTROS;
+    this.listaEstados = (await this.enderecosService.getEstados(null)).REGISTROS;
   }
 
   @action.bound

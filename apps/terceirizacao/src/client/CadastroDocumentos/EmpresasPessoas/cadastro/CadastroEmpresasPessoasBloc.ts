@@ -48,48 +48,6 @@ export default class CadastroEmpresasPessoasBloc extends BaseBloc {
     }
   }
 
-  // @action.bound
-  // buscarEstadoPorPais(event: React.ChangeEvent<any>) {
-  //   this.buscarEstados(event.target.value);
-  // }
-
-  // @action.bound
-  // async buscarEstados(codigoPais?: number): Promise<void> {
-  //   try {
-  //     this.itensCarregando++;
-
-  //     const response = await Services.get().enderecosService.getEstados({
-  //       filtros: `PAIS:IGUAL:${codigoPais ?? 1}`,
-  //       ordenacao: 'NOME',
-  //     });
-  //     this.estados = response.REGISTROS;
-  //   }
-  //   catch (e) {
-  //     this.viewHandler.exibirMensagem(null, e.message);
-  //   }
-  //   finally {
-  //     this.itensCarregando--;
-  //   }
-  // }
-
-  @action.bound
-  async buscarCidades(estado: Estado): Promise<void> {
-    const {NOME} = estado;
-
-    try {
-      this.itensCarregando++;
-
-      const response = await Services.get().enderecosService.getCidades({filtros: NOME});
-      this.estados = response.REGISTROS;
-    }
-    catch (e) {
-      this.viewHandler.exibirMensagem(null, e.message);
-    }
-    finally {
-      this.itensCarregando--;
-    }
-  }
-
   @action.bound
   private async buscarCargaInicial(): Promise<void> {
     try {

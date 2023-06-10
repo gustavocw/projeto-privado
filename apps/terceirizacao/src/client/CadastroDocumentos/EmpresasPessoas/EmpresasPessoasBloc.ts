@@ -2,18 +2,22 @@ import {action, computed, observable} from 'mobx';
 import BaseBloc from '@alkord/shared/bloc/BaseBloc';
 import Services from '@alkord/http/Services';
 import NameToken from '../../../modules/NameToken';
+import TipoPermissao from '@alkord/shared/modules/TipoPermissao.enum';
+import GlobalHandlers from '@alkord/models/handlers/GlobalHandlers';
 import EventBus from '@alkord/shared/utils/EventBus';
+import Veiculo from '@alkord/models/Veiculo';
+import FiltroVeiculosReboques from './filtro/FiltroEmpresasPessoas';
 import {debounce} from '@material-ui/core';
-import FiltroEmpresasPessoas from './filtro/FiltroEmpresasPessoas';
 import ResponsaveisVendas from '@alkord/models/ResponsaveisVendas';
 
-export default class EmpresasPessoasBloc extends BaseBloc {
-  @observable filtro: FiltroEmpresasPessoas = new FiltroEmpresasPessoas();
-  @observable responsaveisVendas: ResponsaveisVendas[] = [];
+export default class VeiculosReboquesBloc extends BaseBloc {
+  @observable veiculos: ResponsaveisVendas[] = [];
   @observable registros: ResponsaveisVendas[] = [];
   @observable isCarregando: boolean = false;
+  @observable filtro: FiltroVeiculosReboques = new FiltroVeiculosReboques();
   @observable private totalRegistros: number = 1;
-  private atualizarResponsaveisVendasDebounce = debounce(async () => await this.buscarTodosRegistros(), 500);
+  private textoFiltro: string = '';
+  private atualizarVeiculoDebounce = debounce(async () => await this.buscarTodosRegistros(), 500);
 
   @action.bound
   async buscarTodosRegistros(): Promise<void> {
@@ -33,11 +37,12 @@ export default class EmpresasPessoasBloc extends BaseBloc {
     try {
       this.isCarregando = true;
 
-      const response = await Services.get().responsaveisVendasService.get({});
+      const response = await Services.get().responsaveisVendasService.get(null);
       console.log(response);
+
       this.totalRegistros = response.TOTAL_REGISTROS;
 
-      return this.responsaveisVendas = response.REGISTROS;
+      return this.veiculos = response.REGISTROS;
     }
     catch (e) {
       this.viewHandler.exibirMensagem(null, e.message);
@@ -50,12 +55,12 @@ export default class EmpresasPessoasBloc extends BaseBloc {
 
   @action.bound
   cadastrarRegistro(): void {
-    this.viewHandler.navegarParaPagina(NameToken.CADASTRO_EMPRESAS_E_PESSOAS, false, {});
+    this.viewHandler.navegarParaPagina(NameToken.CADASTRO_VEICULO, false, {});
   }
 
   @action.bound
-  editarRegistro(registro: ResponsaveisVendas): void {
-    this.viewHandler.navegarParaPagina(NameToken.CADASTRO_EMPRESAS_E_PESSOAS, false, {codigo: registro.CODIGO});
+  editarRegistro(registro: Veiculo): void {
+    this.viewHandler.navegarParaPagina(NameToken.CADASTRO_VEICULO, false, {codigo: registro.CODIGO});
   }
 
   @action.bound
@@ -69,16 +74,15 @@ export default class EmpresasPessoasBloc extends BaseBloc {
 
   @action.bound
   private async executarRemocaoRegistro(registro: ResponsaveisVendas): Promise<void> {
-    console.log(registro);
     try {
-      // await Services.get().transporteService.editarTipoResponsaveisVendas(
-      //     registro.CODIGO,
-      //     Object.assign(new ResponsaveisVendas(), {
-      //       EXCLUIDO: true,
-      //     } as ResponsaveisVendas),
-      // );
+      await Services.get().transporteService.editarTipoVeiculo(
+          registro.CODIGO,
+          Object.assign(new Veiculo(), {
+            EXCLUIDO: true,
+          } as Veiculo),
+      );
 
-      // this.buscarTodosRegistros();
+      this.buscarTodosRegistros();
     }
     catch (e) {
       this.viewHandler.exibirMensagem(null, e.message);
@@ -86,14 +90,34 @@ export default class EmpresasPessoasBloc extends BaseBloc {
   }
 
   @action.bound
-  async atualizarFiltro(filtro: FiltroEmpresasPessoas) {
-    this.filtro = filtro;
-    return this.buscarTodosRegistros();
+  getFiltros() {
+    const filtrosArray = ['EXCLUIDO:IGUAL:N'];
+
+    if (this.textoFiltro?.length) {
+      filtrosArray.push(`PLACA:COMECA_COM:${this.textoFiltro}`);
+    }
+
+    if (this.filtro.VEICULO_TIPO) {
+      filtrosArray.push(`TIPO:IGUAL:${this.filtro.VEICULO_TIPO}`);
+    }
+
+    if (this.filtro.ESTADO) {
+      filtrosArray.push(`ESTADO:IGUAL:${this.filtro.ESTADO.CODIGO}`);
+    }
+
+    return filtrosArray.join(',');
   }
 
   @action.bound
-  alterarTextoPesquisa() {
-    this.atualizarResponsaveisVendasDebounce();
+  alterarTextoPesquisa(texto: string) {
+    this.textoFiltro = texto;
+    this.atualizarVeiculoDebounce();
+  }
+
+  @action.bound
+  async atualizarFiltro(filtro: FiltroVeiculosReboques) {
+    this.filtro = filtro;
+    return this.buscarTodosRegistros();
   }
 
   @action.bound
@@ -110,6 +134,24 @@ export default class EmpresasPessoasBloc extends BaseBloc {
 
   @computed
   get podeBuscarMaisRegistros(): boolean {
-    return this.responsaveisVendas.length < this.totalRegistros;
+    return this.veiculos.length < this.totalRegistros;
+  }
+
+  @computed
+  get isCadastroHabilitado(): boolean {
+    return GlobalHandlers.gerenciadorPermissoes
+        .isPermissaoHabilitada(NameToken.VEICULOS_REBOQUES, TipoPermissao.CADASTRAR);
+  }
+
+  @computed
+  get isEdicaoHabilitada(): boolean {
+    return GlobalHandlers.gerenciadorPermissoes
+        .isPermissaoHabilitada(NameToken.VEICULOS_REBOQUES, TipoPermissao.EDITAR);
+  }
+
+  @computed
+  get isRemocaoHabilitada(): boolean {
+    return GlobalHandlers.gerenciadorPermissoes
+        .isPermissaoHabilitada(NameToken.VEICULOS_REBOQUES, TipoPermissao.APAGAR);
   }
 }

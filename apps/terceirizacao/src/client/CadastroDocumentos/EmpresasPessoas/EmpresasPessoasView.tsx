@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import VeiculosReboquesBloc from './EmpresasPessoasBloc';
 import ViewProps from '@alkord/shared/types/ViewProps';
 import {bindView} from '@alkord/components/ViewBinder';
 import useBaseViewHandler from '@alkord/shared/bloc/UseBaseViewHandler';
@@ -11,61 +12,54 @@ import SearchBar from '@alkord/components/SearchBar';
 import {DeleteOutline} from '@material-ui/icons';
 import {Button} from '@material-ui/core';
 import BarraAcoes from '@alkord/components/BarraAcoes';
-import EmpresasPessoasBloc from './EmpresasPessoasBloc';
-import FiltroEmpresasPessoasView from './filtro/FiltroEmpresasPessoas.View';
-import FiltroEmpresasPessoas from './filtro/FiltroEmpresasPessoas';
+import FiltroVeiculosReboquesView from './filtro/FiltroEmpresasPessoas.View';
+import FiltroVeiculosReboques from './filtro/FiltroEmpresasPessoas';
 import ResponsaveisVendas from '@alkord/models/ResponsaveisVendas';
 
-type ComponentProps = ViewProps<EmpresasPessoasBloc>;
+type Props = ViewProps<VeiculosReboquesBloc>;
 
-const EmpresasPessoasView: React.FC<ComponentProps> = ({bloc}: ComponentProps) => {
+const VeiculosReboquesView: React.FC<Props> = (props: Props) => {
+  const {bloc} = props;
+
   useBaseViewHandler(bloc);
-
-  useEffect(() => {
-    bloc.buscarTodosRegistros();
-  }, [bloc]);
 
   return (
     <>
       <AppBar title="Empresas e pessoas"/>
-
       <ViewContent>
         <CardRegistros
-          titulo={<SearchBar onChange={bloc.alterarTextoPesquisa}/>}
-          acoesHeader={<FiltroEmpresasPessoasView
-            onFiltrar={(filtros: FiltroEmpresasPessoas) => bloc.atualizarFiltro(filtros)}
-          />}
+          titulo={(
+            <SearchBar onChange={bloc.alterarTextoPesquisa}/>
+          )}
+          acoesHeader={(
+            <FiltroVeiculosReboquesView
+              onFiltrar={(filtros: FiltroVeiculosReboques) => bloc.atualizarFiltro(filtros)}
+            />
+          )}
           exibirBuscarRegistros={bloc.podeBuscarMaisRegistros}
           onCarregarMaisRegistros={bloc.buscarMaisRegistros}
           displayDivider
         >
           <ListaRegistros<ResponsaveisVendas>
-            registros={bloc.responsaveisVendas}
-            onClick={() => alert('clicou na lista de registros')}
-
+            registros={bloc.veiculos}
             render={(registro) => {
               return (
                 <div>
-                  <Text style={{fontWeight: '450'}}>
-                    informações serão aqui
-                  </Text>
-
+                  <Text style={{fontWeight: '450'}}>{registro.NOME}</Text>
                   <Text style={{fontWeight: '400', color: '#6E6E6E'}}>
-                    outras infomrações serão aqui
+                    CNPJ {`${registro.NOME}`}
                   </Text>
                 </div>
               );
             }}
-
             acoes={{
               onClick: bloc.removerRegistro,
-              condicao: () => true,
+              condicao: () => bloc.isRemocaoHabilitada,
               icone: <DeleteOutline color="secondary"/>,
             }}
           />
         </CardRegistros>
-
-        {/* {bloc.isCadastroHabilitado && (
+        {bloc.isCadastroHabilitado && (
           <BarraAcoes sempreVisivel>
             <Button
               type="submit"
@@ -73,13 +67,13 @@ const EmpresasPessoasView: React.FC<ComponentProps> = ({bloc}: ComponentProps) =
               variant="contained"
               onClick={bloc.cadastrarRegistro}
             >
-              ADICIONAR
+              NOVO VEICULO
             </Button>
           </BarraAcoes>
-        )} */}
+        )}
       </ViewContent>
     </>
   );
 };
 
-export default bindView(EmpresasPessoasView, EmpresasPessoasBloc);
+export default bindView(VeiculosReboquesView, VeiculosReboquesBloc);
