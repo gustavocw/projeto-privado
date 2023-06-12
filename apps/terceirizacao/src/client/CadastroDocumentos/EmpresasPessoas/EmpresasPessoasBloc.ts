@@ -8,11 +8,11 @@ import EventBus from '@alkord/shared/utils/EventBus';
 import Veiculo from '@alkord/models/Veiculo';
 import FiltroVeiculosReboques from './filtro/FiltroEmpresasPessoas';
 import {debounce} from '@material-ui/core';
-import ResponsaveisVendas from '@alkord/models/ResponsaveisVendas';
+import Pessoa from '@alkord/models/Pessoa';
 
 export default class VeiculosReboquesBloc extends BaseBloc {
-  @observable veiculos: ResponsaveisVendas[] = [];
-  @observable registros: ResponsaveisVendas[] = [];
+  @observable pessoas: Pessoa[] = [];
+  @observable registros: Pessoa[] = [];
   @observable isCarregando: boolean = false;
   @observable filtro: FiltroVeiculosReboques = new FiltroVeiculosReboques();
   @observable private totalRegistros: number = 1;
@@ -33,16 +33,25 @@ export default class VeiculosReboquesBloc extends BaseBloc {
   }
 
   @action.bound
-  private async buscarRegistros() {
+  private async buscarRegistros(): Promise<Pessoa[]> {
     try {
       this.isCarregando = true;
 
-      const response = await Services.get().responsaveisVendasService.get(null);
-      console.log(response);
+      const response = await Services.get().pessoasService.get({
+        colunas: 'CODIGO,NOME,APELIDO,DOCUMENTO,DOCUMENTO2,' +
+        'TIPO_PESSOA,NACIONALIDADE,COMERCIAL_VENDA,TELEFONES,EMAILS, VENDEDOR,NASCIMENTO_CONSTITUICAO,REGIAO,' +
+        'FISCAL,ENDERECOS,RAMOS_ATIVIDADE,RELACIONAMENTOS',
+        ordenacao: 'CODIGO',
+        // filtros: this.getFiltros(),
+        registroInicial: this.registros.length,
+        numeroRegistros: 50,
+      });
+
+      console.log(response.REGISTROS);
 
       this.totalRegistros = response.TOTAL_REGISTROS;
 
-      return this.veiculos = response.REGISTROS;
+      return this.pessoas = response.REGISTROS;
     }
     catch (e) {
       this.viewHandler.exibirMensagem(null, e.message);
@@ -64,7 +73,7 @@ export default class VeiculosReboquesBloc extends BaseBloc {
   }
 
   @action.bound
-  async removerRegistro(registro: ResponsaveisVendas): Promise<void> {
+  async removerRegistro(registro: Pessoa): Promise<void> {
     this.viewHandler.exibirConfirmacao(
         'Atenção',
         'Tem certeza que deseja excluir o registro?',
@@ -73,7 +82,7 @@ export default class VeiculosReboquesBloc extends BaseBloc {
   }
 
   @action.bound
-  private async executarRemocaoRegistro(registro: ResponsaveisVendas): Promise<void> {
+  private async executarRemocaoRegistro(registro: Pessoa): Promise<void> {
     try {
       await Services.get().transporteService.editarTipoVeiculo(
           registro.CODIGO,
@@ -93,17 +102,9 @@ export default class VeiculosReboquesBloc extends BaseBloc {
   getFiltros() {
     const filtrosArray = ['EXCLUIDO:IGUAL:N'];
 
-    if (this.textoFiltro?.length) {
-      filtrosArray.push(`PLACA:COMECA_COM:${this.textoFiltro}`);
-    }
-
-    if (this.filtro.VEICULO_TIPO) {
-      filtrosArray.push(`TIPO:IGUAL:${this.filtro.VEICULO_TIPO}`);
-    }
-
-    if (this.filtro.ESTADO) {
-      filtrosArray.push(`ESTADO:IGUAL:${this.filtro.ESTADO.CODIGO}`);
-    }
+    if (this.textoFiltro?.length) filtrosArray.push(`NOME:COMECA_COM:${this.textoFiltro}`);
+    else if (this.filtro.ESTADO) filtrosArray.push(`ESTADO:IGUAL:${this.filtro.ESTADO}`);
+    else if (this.filtro.ESTADO.CODIGO)filtrosArray.push(`ESTADO:IGUAL:${this.filtro.ESTADO.CODIGO}`);
 
     return filtrosArray.join(',');
   }
@@ -134,24 +135,24 @@ export default class VeiculosReboquesBloc extends BaseBloc {
 
   @computed
   get podeBuscarMaisRegistros(): boolean {
-    return this.veiculos.length < this.totalRegistros;
+    return this.pessoas.length < this.totalRegistros;
   }
 
   @computed
   get isCadastroHabilitado(): boolean {
     return GlobalHandlers.gerenciadorPermissoes
-        .isPermissaoHabilitada(NameToken.VEICULOS_REBOQUES, TipoPermissao.CADASTRAR);
+        .isPermissaoHabilitada(NameToken.CADASTRO_EMPRESAS_E_PESSOAS, TipoPermissao.CADASTRAR);
   }
 
   @computed
   get isEdicaoHabilitada(): boolean {
     return GlobalHandlers.gerenciadorPermissoes
-        .isPermissaoHabilitada(NameToken.VEICULOS_REBOQUES, TipoPermissao.EDITAR);
+        .isPermissaoHabilitada(NameToken.CADASTRO_EMPRESAS_E_PESSOAS, TipoPermissao.EDITAR);
   }
 
   @computed
   get isRemocaoHabilitada(): boolean {
     return GlobalHandlers.gerenciadorPermissoes
-        .isPermissaoHabilitada(NameToken.VEICULOS_REBOQUES, TipoPermissao.APAGAR);
+        .isPermissaoHabilitada(NameToken.EMPRESAS_E_PESSOAS, TipoPermissao.APAGAR);
   }
 }

@@ -14,7 +14,7 @@ import {Button} from '@material-ui/core';
 import BarraAcoes from '@alkord/components/BarraAcoes';
 import FiltroVeiculosReboquesView from './filtro/FiltroEmpresasPessoas.View';
 import FiltroVeiculosReboques from './filtro/FiltroEmpresasPessoas';
-import ResponsaveisVendas from '@alkord/models/ResponsaveisVendas';
+import Pessoa from '@alkord/models/Pessoa';
 
 type Props = ViewProps<VeiculosReboquesBloc>;
 
@@ -40,14 +40,15 @@ const VeiculosReboquesView: React.FC<Props> = (props: Props) => {
           onCarregarMaisRegistros={bloc.buscarMaisRegistros}
           displayDivider
         >
-          <ListaRegistros<ResponsaveisVendas>
-            registros={bloc.veiculos}
+          <ListaRegistros<Pessoa>
+            registros={bloc.pessoas}
             render={(registro) => {
               return (
                 <div>
-                  <Text style={{fontWeight: '450'}}>{registro.NOME}</Text>
+                  <Text style={{fontWeight: '450'}}>{registro.APELIDO ?? 'APELIDO AQUI'}</Text>
+
                   <Text style={{fontWeight: '400', color: '#6E6E6E'}}>
-                    CNPJ {`${registro.NOME}`}
+                    {registro.DOCUMENTO ?? 'CNPJ AQUI'}
                   </Text>
                 </div>
               );
@@ -67,7 +68,7 @@ const VeiculosReboquesView: React.FC<Props> = (props: Props) => {
               variant="contained"
               onClick={bloc.cadastrarRegistro}
             >
-              NOVO VEICULO
+              ADICIONAR
             </Button>
           </BarraAcoes>
         )}
