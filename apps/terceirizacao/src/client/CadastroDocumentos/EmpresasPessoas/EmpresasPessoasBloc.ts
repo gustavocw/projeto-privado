@@ -47,8 +47,6 @@ export default class VeiculosReboquesBloc extends BaseBloc {
         numeroRegistros: 50,
       });
 
-      console.log(response.REGISTROS);
-
       this.totalRegistros = response.TOTAL_REGISTROS;
 
       return this.pessoas = response.REGISTROS;
@@ -64,12 +62,12 @@ export default class VeiculosReboquesBloc extends BaseBloc {
 
   @action.bound
   cadastrarRegistro(): void {
-    this.viewHandler.navegarParaPagina(NameToken.CADASTRO_VEICULO, false, {});
+    this.viewHandler.navegarParaPagina(NameToken.CADASTRO_EMPRESAS_E_PESSOAS, false, {});
   }
 
   @action.bound
   editarRegistro(registro: Veiculo): void {
-    this.viewHandler.navegarParaPagina(NameToken.CADASTRO_VEICULO, false, {codigo: registro.CODIGO});
+    this.viewHandler.navegarParaPagina(NameToken.CADASTRO_EMPRESAS_E_PESSOAS, false, {codigo: registro.CODIGO});
   }
 
   @action.bound

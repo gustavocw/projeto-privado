@@ -3,7 +3,7 @@ import {action, computed, IReactionDisposer, observable, reaction} from 'mobx';
 import BaseBloc from '@alkord/shared/bloc/BaseBloc';
 import TipoPermissao from '@alkord/shared/modules/TipoPermissao.enum';
 import GlobalHandlers from '@alkord/models/handlers/GlobalHandlers';
-import Veiculo from '@alkord/models/Veiculo';
+import Pessoa from '@alkord/models/Pessoa';
 import Estado from '@alkord/models/Estado';
 import NameToken from '../../../../modules/NameToken';
 import Services from '@alkord/http/Services';
@@ -14,12 +14,12 @@ import Pais from '@alkord/models/Pais';
 
 export default class CadastroEmpresasPessoasBloc extends BaseBloc {
   @observable codigoRegistro?: number;
-  @observable registro: Veiculo = new Veiculo();
+  @observable registro: Pessoa = new Pessoa();
   @observable estados: Array<Estado> = [];
   @observable retornaEstado: string;
   @observable tipoDeCarroceria: number | string;
   @observable erros: { [key: string]: string } = {};
-  @observable visibilidadeCampos: { [key in Paths<Veiculo>]?: boolean } = {};
+  @observable visibilidadeCampos: { [key in Paths<Pessoa>]?: boolean } = {};
   @observable paises: Pais[] = [];
   @observable paisEscolhido: Pais;
 
@@ -53,12 +53,12 @@ export default class CadastroEmpresasPessoasBloc extends BaseBloc {
     try {
       this.itensCarregando++;
 
-      const response = await Services.get().transporteService.getVeiculos({
-        colunas: 'CODIGO,TIPO,PLACA,RNTRC,CODIGO_INTERNO,TARA,RENAVAM,CAPACIDADE_VOLUME,CAPACIDADE_PESO,' +
-          'ESTADO[NOME,SIGLA],TIPO_RODADO,TIPO_CARROCERIA,LOCALIZACAO[NOME]',
-        // +',CAPACIDADE_ALTURA,CAPACIDADE_LARGURA,CAPACIDADE_PROFUNDIDADE',
-        ordenacao: 'PLACA ASC',
-        filtros: `CODIGO:IGUAL:${this.codigoRegistro}`,
+      const response = await Services.get().pessoasService.get({
+        colunas: 'CODIGO,NOME,APELIDO,DOCUMENTO,DOCUMENTO2,' +
+        'TIPO_PESSOA,NACIONALIDADE,COMERCIAL_VENDA,TELEFONES,EMAILS, VENDEDOR,NASCIMENTO_CONSTITUICAO,REGIAO,' +
+        'FISCAL,ENDERECOS,RAMOS_ATIVIDADE,RELACIONAMENTOS',
+        ordenacao: 'CODIGO',
+        filtros: `CODIGO:IGUAL${this.codigoRegistro}`,
         registroInicial: 0,
         numeroRegistros: 1,
       });
@@ -80,7 +80,7 @@ export default class CadastroEmpresasPessoasBloc extends BaseBloc {
     this.codigoRegistro = !!query.get('codigo') ?
       parseInt(query.get('codigo')) :
       null;
-    this.registro = new Veiculo();
+    this.registro = new Pessoa();
 
     if (this.codigoRegistro) {
       await this.buscarCargaInicial();
@@ -92,12 +92,12 @@ export default class CadastroEmpresasPessoasBloc extends BaseBloc {
   @action.bound
   private inicializarReactions(): void {
     this.reactions = [
-      reaction(() => this.registro?.TIPO, this.atualizarVisibilidadeCampos),
+      reaction(() => this.registro?.APELIDO, this.atualizarVisibilidadeCampos),
       reaction(
           () => [
-            this.registro?.CAPACIDADE_ALTURA,
-            this.registro?.CAPACIDADE_LARGURA,
-            this.registro?.CAPACIDADE_PROFUNDIDADE,
+            this.registro?.APELIDO,
+            this.registro?.DOCUMENTO,
+            this.registro?.CODIGO,
           ],
           () => this.calcularVolume(),
       ),
@@ -155,14 +155,14 @@ export default class CadastroEmpresasPessoasBloc extends BaseBloc {
       this.itensCarregando++;
 
       if (this.isCadastro) {
-        await Services.get().transporteService.cadastrarTipoVeiculo(this.registro);
+        // await Services.get().transporteService.cadastrarTipoPessoa(this.registro);
       }
       else {
-        await Services.get().transporteService.editarTipoVeiculo(this.codigoRegistro, this.registro);
+        // await Services.get().transporteService.editarTipoPessoa(this.codigoRegistro, this.registro);
       }
 
       EventBus.get().postSticky('recarregar', true);
-      this.viewHandler.navegarParaPagina(NameToken.VEICULOS_REBOQUES, true);
+      this.viewHandler.navegarParaPagina(NameToken.EMPRESAS_E_PESSOAS, true);
     }
     catch (e) {
       this.viewHandler.exibirMensagem(null, e.message);
@@ -193,7 +193,7 @@ export default class CadastroEmpresasPessoasBloc extends BaseBloc {
   @computed
   get isCadastroHabilitado(): boolean {
     return GlobalHandlers.gerenciadorPermissoes.isPermissaoHabilitada(
-        NameToken.CADASTRO_VEICULO,
+        NameToken.CADASTRO_EMPRESAS_E_PESSOAS,
         TipoPermissao.CADASTRAR,
     );
   }
@@ -201,21 +201,21 @@ export default class CadastroEmpresasPessoasBloc extends BaseBloc {
   @computed
   get isEdicaoHabilitada(): boolean {
     return GlobalHandlers.gerenciadorPermissoes.isPermissaoHabilitada(
-        NameToken.CADASTRO_VEICULO,
+        NameToken.CADASTRO_EMPRESAS_E_PESSOAS,
         TipoPermissao.EDITAR,
     );
   }
 
   @action.bound
   private calcularVolume() {
-    if (!this.registro?.CAPACIDADE_ALTURA ||
-      !this.registro?.CAPACIDADE_LARGURA ||
-      !this.registro?.CAPACIDADE_PROFUNDIDADE) {
-      return;
-    }
+    // if (!this.registro?.CAPACIDADE_ALTURA ||
+    //   !this.registro?.CAPACIDADE_LARGURA ||
+    //   !this.registro?.CAPACIDADE_PROFUNDIDADE) {
+    //   return;
+    // }
 
-    this.registro.CAPACIDADE_VOLUME = (this.registro.CAPACIDADE_ALTURA *
-      this.registro.CAPACIDADE_LARGURA *
-    this.registro?.CAPACIDADE_PROFUNDIDADE);
+    // this.registro.CAPACIDADE_VOLUME = (this.registro.CAPACIDADE_ALTURA *
+    //   this.registro.CAPACIDADE_LARGURA *
+    // this.registro?.CAPACIDADE_PROFUNDIDADE);
   }
 }

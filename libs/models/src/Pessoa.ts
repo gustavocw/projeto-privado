@@ -35,38 +35,45 @@ export default class Pessoa {
   @jsonString
   @observable
   APELIDO?: string;
+  @observable
   @jsonString
   DOCUMENTO?: string;
+  @observable
   @jsonString
   DOCUMENTO2?: string;
+  @observable
   @jsonEnum(PessoaTipo)
   TIPO_PESSOA: PessoaTipo;
+  @observable
   @jsonEnum(PessoaNacionalidade)
   NACIONALIDADE: PessoaNacionalidade;
+  @observable
   @jsonClass(() => PessoaComercialVenda)
   COMERCIAL_VENDA?: PessoaComercialVenda;
+  @observable
   @jsonArray(() => PessoaTelefone)
   TELEFONES?: PessoaTelefone[];
+  @observable
   @jsonArray(() => PessoaEmail)
   EMAILS?: PessoaEmail[];
-  @jsonArray(() => PessoaRelacionamento)
+  @observable@jsonArray(() => PessoaRelacionamento)
   RELACIONAMENTOS?: PessoaRelacionamento[];
-  @jsonArray(() => PessoaRamoAtividade)
+  @observable@jsonArray(() => PessoaRamoAtividade)
   RAMOS_ATIVIDADE?: PessoaRamoAtividade[];
-  @jsonArray(() => PessoaEndereco)
+  @observable@jsonArray(() => PessoaEndereco)
   ENDERECOS: PessoaEndereco[];
-  @jsonClass(() => PessoaFiscal)
+  @observable@jsonClass(() => PessoaFiscal)
   FISCAL?: PessoaFiscal;
-  @jsonClass(() => RegiaoVenda)
+  @observable@jsonClass(() => RegiaoVenda)
   REGIAO: RegiaoVenda;
-  @jsonDateFormat('date')
+  @observable@jsonDateFormat('date')
   NASCIMENTO_CONSTITUICAO: Date;
-  @jsonClass(() => PessoaVendedor)
+  @observable@jsonClass(() => PessoaVendedor)
   VENDEDOR: PessoaVendedor;
-  @jsonClass(() => PessoaRh)
+  @observable@jsonClass(() => PessoaRh)
   RH?: PessoaRh;
-  @jsonConvertStringToBoolean
   @observable
+  @jsonConvertStringToBoolean
   EXCLUIDO?: boolean;
 
   @computed
